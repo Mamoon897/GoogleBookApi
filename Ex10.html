@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Books</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <style>
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color:rgb(197, 222, 161);
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input {
+      width: 400px;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px;
+      cursor: pointer;
+      margin-right: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #book-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #book-list li {
+      margin-bottom: 10px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 1px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  
+  </style>
+</head>
+<body>
+
+<label for="search-term">Search Term:</label>
+<input type="text" id="search-term">
+<button id="search-books">Search</button>
+<button id="load-books">Load Books</button>
+<ul id="book-list"></ul>
+
+<script>
+  $(document).ready(function() {
+    $("#search-books").click(function() {
+      var searchTerm = $("#search-term").val();
+      if (searchTerm) {
+        fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + searchTerm);
+      }
+    });
+
+    $("#load-books").click(function() {
+      // Generate a random query term for variety
+      var randomTerms = ["science", "fiction", "history", "technology", "art"];
+      var randomIndex = Math.floor(Math.random() * randomTerms.length);
+      var randomTerm = randomTerms[randomIndex];
+
+      fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + randomTerm);
+    });
+
+    function fetchBooks(apiUrl) {
+      $.ajax({
+        url: apiUrl,
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+          displayBooks(data.items);
+        },
+        error: function(error) {
+          console.log("Error fetching books:", error);
+        }
+      });
+    }
+
+    function displayBooks(books) {
+      var bookList = $("#book-list");
+      bookList.empty();
+
+      $.each(books, function(index, book) {
+        var title = book.volumeInfo.title;
+        var authors = book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Unknown";
+
+        var listItem = $("<li>").text(title + " by " + authors);
+        bookList.append(listItem);
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
