@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Books</title>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <style>
-    
     body {
       font-family: 'Arial', sans-serif;
       margin: 20px;
-      background-color:rgb(197, 222, 161);
+      background-color: rgb(197, 222, 161);
       color: #333;
     }
 
@@ -54,63 +54,69 @@
       border-radius: 1px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-  
+
+    #book-list li img {
+      margin-right: 10px;
+      border-radius: 4px;
+    }
   </style>
 </head>
+
 <body>
 
-<label for="search-term">Search Term:</label>
-<input type="text" id="search-term">
-<button id="search-books">Search</button>
-<button id="load-books">Load Books</button>
-<ul id="book-list"></ul>
+  <label for="search-term">Search Term:</label>
+  <input type="text" id="search-term">
+  <button id="search-books">Search</button>
+  <button id="load-books">Load Books</button>
+  <ul id="book-list"></ul>
 
-<script>
-  $(document).ready(function() {
-    $("#search-books").click(function() {
-      var searchTerm = $("#search-term").val();
-      if (searchTerm) {
-        fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + searchTerm);
-      }
-    });
-
-    $("#load-books").click(function() {
-      // Generate a random query term for variety
-      var randomTerms = ["science", "fiction", "history", "technology", "art"];
-      var randomIndex = Math.floor(Math.random() * randomTerms.length);
-      var randomTerm = randomTerms[randomIndex];
-
-      fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + randomTerm);
-    });
-
-    function fetchBooks(apiUrl) {
-      $.ajax({
-        url: apiUrl,
-        type: "GET",
-        dataType: "json",
-        success: function(data) {
-          displayBooks(data.items);
-        },
-        error: function(error) {
-          console.log("Error fetching books:", error);
+  <script>
+    $(document).ready(function () {
+      $("#search-books").click(function () {
+        var searchTerm = $("#search-term").val();
+        if (searchTerm) {
+          fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + searchTerm);
         }
       });
-    }
 
-    function displayBooks(books) {
-      var bookList = $("#book-list");
-      bookList.empty();
+      $("#load-books").click(function () {
+        var randomTerms = ["science", "fiction", "history", "technology", "art"];
+        var randomIndex = Math.floor(Math.random() * randomTerms.length);
+        var randomTerm = randomTerms[randomIndex];
 
-      $.each(books, function(index, book) {
-        var title = book.volumeInfo.title;
-        var authors = book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Unknown";
-
-        var listItem = $("<li>").text(title + " by " + authors);
-        bookList.append(listItem);
+        fetchBooks("https://www.googleapis.com/books/v1/volumes?q=" + randomTerm);
       });
-    }
-  });
-</script>
+
+      function fetchBooks(apiUrl) {
+        $.ajax({
+          url: apiUrl,
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            displayBooks(data.items);
+          },
+          error: function (error) {
+            console.log("Error fetching books:", error);
+          }
+        });
+      }
+
+      function displayBooks(books) {
+        var bookList = $("#book-list");
+        bookList.empty();
+
+        $.each(books, function (index, book) {
+          var title = book.volumeInfo.title;
+          var authors = book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Unknown";
+          var thumbnail = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : "https://via.placeholder.com/128x192.png";
+
+          var listItem = $("<li>").html(`<img src="${thumbnail}" alt="${title}"> <b>${title}</b> by ${authors}`);
+          bookList.append(listItem);
+        });
+      }
+    });
+  </script>
 
 </body>
+
 </html>
